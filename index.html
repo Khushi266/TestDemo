@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {text-align: center;}
+        #enterDetails {float: left; width: 50%;  background-color: darkslategray; color: floralwhite;}
+        #findDetails {float: left; width: 50%; background-color: floralwhite; color: darkslategray;}
+        input {width: 120px;}
+    </style>
+</head>
+<body>
+    <div id="enterDetails">
+        <h1>Enter the details for your advertisement</h1>
+
+        <h4>Job Title</h4> 
+        <input id="enterTitle" type="text"> 
+
+        <h4>Company Name</h4> 
+        <input id="enterCompanyName" type="text"> 
+
+        <h4>Description</h4> 
+        <input id="enterDescription" type="text">
+
+        <h4>Requirements</h4> 
+        <input id="enterRequirements" type="text">
+
+        <h4>Salary</h4> 
+        <input id="enterSalary" type="number"> 
+        
+        <h4>Location</h4> 
+        <input id="enterLocation" type="text"><br><br>
+
+        <button id="insert">INSERT</button>
+        <button id="update">UPDATE</button>
+        <button id="remove">REMOVE</button> <br><br>
+    </div>
+
+    <div id="findDetails">
+        <h1>Advertisements</h1>
+        <div id="adsContainer"></div><br><br>
+        <button id="advertisementsBtn">Show Advertisements</button>
+        <br><br>
+    </div>
+    
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKL16C5ABEWa43zUqwbcns_4k9VrJZz-E",
+            authDomain: "testdemo-9533e.firebaseapp.com",
+            databaseURL: "https://testdemo-9533e-default-rtdb.firebaseio.com",
+            projectId: "testdemo-9533e",
+            storageBucket: "testdemo-9533e.firebasestorage.app",
+            messagingSenderId: "316677521015",
+            appId: "1:316677521015:web:bcefe145b8539ba3155072",
+            measurementId: "G-3G8LPCR23G"
+        };
+   
+
+        import {getDatabase, ref, get, set, child, update, remove}
+        from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+        
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+
+        var enterTitle = document.querySelector("#enterTitle");
+        var enterCompanyName = document.querySelector("#enterCompanyName");
+        var enterDescription = document.querySelector("#enterDescription");
+        var enterRequirements = document.querySelector("#enterRequirements");
+        var enterSalary = document.querySelector("#enterSalary");
+        var enterLocation = document.querySelector("#enterLocation");
+
+        var findTitle = document.querySelector("#findTitle");
+        var findCompanyName = document.querySelector("#findCompanyName");
+        var findDescription = document.querySelector("#findDescription");
+        var findRequirements = document.querySelector("#findRequirements");
+        var findSalary = document.querySelector("#findSalary");
+        var findLocation = document.querySelector("#findLocation");
+      
+        var adsContainer = document.querySelector("#adsContainer");
+        var insertBtn = document.querySelector("#insert");
+        var updateBtn = document.querySelector("#update");
+        var removeBtn = document.querySelector("#remove");
+        var advertisementsBtn = document.querySelector("#advertisementsBtn");
+    
+
+        function InsertData() {
+            set(ref(db, "Advertisements/"+ enterTitle.value),{
+                Job_Title: enterTitle.value,
+                Company_Name: enterCompanyName.value,
+                Description: enterDescription.value,
+                Requirements: enterRequirements.value,
+                Salary: enterSalary.value,
+                Location: enterLocation.value
+            })
+            .then(()=>{
+                alert("Data added successfully");
+            })
+            .catch((error)=>{
+                alert(error);
+            });
+        }
+
+        function ShowAdvertisements() {
+            const dbref = ref(db, "Advertisements");
+
+            get(dbref).then((snapshot) => {
+                if (snapshot.exists()) {
+                    adsContainer.innerHTML = "";  // Clear the container first
+                    snapshot.forEach((childSnapshot) => {
+                        const data = childSnapshot.val();
+                        adsContainer.innerHTML += `
+                            <div>
+                                <h3>Job Title: ${data.Job_Title}</h3>
+                                <p>Company: ${data.Company_Name}</p>
+                                <p>Description: ${data.Description}</p>
+                                <p>Requirements: ${data.Requirements}</p>
+                                <p>Salary: ${data.Salary}</p>
+                                <p>Location: ${data.Location}</p>
+                                <hr>
+                            </div>
+                        `;
+                    });
+                } else {
+                    alert("No advertisements found");
+                }
+            }).catch((error) => {
+                alert(error);
+            });
+        }
+
+        function UpdateData(){
+            update(ref(db, "Advertisements/"+ enterTitle.value),{
+                Job_Title: enterTitle.value,
+                Company_Name: enterCompanyName.value,
+                Description: enterDescription.value,
+                Requirements: enterRequirements.value,
+                Salary: enterSalary.value,
+                Location: enterLocation.value
+            })
+            .then(()=>{
+                alert("Data updated successfully");
+            })
+            .catch((error)=>{
+                alert(error);
+            });
+        }
+
+        function RemoveData(){
+            remove(ref(db, "Advertisements/"+ enterTitle.value))
+            .then(()=>{
+                alert("Data deleted successfully");
+            })
+            .catch((error)=>{
+                alert(error);
+            });
+        }
+
+        insertBtn.addEventListener('click', InsertData);
+        updateBtn.addEventListener('click', UpdateData);
+        removeBtn.addEventListener('click', RemoveData);
+        advertisementsBtn.addEventListener('click', ShowAdvertisements);
+
+      </script>
+</body>
+</html>
